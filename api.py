@@ -159,7 +159,7 @@ class EmailField(CharField):
         if not is_valid and value and isinstance(value, str):
             errors = [f"Поле '{field_name or 'email'}' должно быть валидным email адресом"]
 
-        if "@" not in value:
+        if value and value.find("@") > 0:
             errors = [f"Поле '{field_name or 'email'}' должно содеражть знак @"]    
         
         return is_valid, errors
@@ -327,7 +327,9 @@ class MethodRequest(metaclass=Fields):
     @classmethod
     def validate(cls,  data: dict[str, Any]) -> tuple[bool, list[str]]:
         errors = []
-        
+      #  auth = check_auth()
+      #  if not auth:
+      #      return ErrorMessage(FORBIDDEN), FORBIDDEN
         for field_name, field_validator in cls._fields.items():
             value = data.get(field_name)
             is_valid, field_errors = field_validator.validate(value, field_name)
@@ -357,11 +359,13 @@ def check_auth(request: MethodRequest) -> bool:
 def method_handler(
     request: dict[str, Any],
     ctx: dict[str, Any],
+    settings:  dict[str, Any]
 ) -> tuple[dict[str, Any], int]:
+
     body = request.get('body')
     is_valid, errors = MethodRequest.validate(body)
     if not is_valid:
-        return errors, BAD_REQUEST
+        return errors, INVALID_REQUEST
     
     method_name = body.get('method')
     arguments = body.get('arguments', {})
