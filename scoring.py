@@ -1,6 +1,7 @@
 import random
 from typing import Any
 
+
 def get_score(
     phone,
     email,
@@ -43,12 +44,10 @@ def get_interests(cid: str) -> list[str]:
 
     return random.sample(interests, 2)
 
-def get_clients_interests(client_ids: list[Any]) -> dict[str, list[str]]:
 
+def get_clients_interests(client_ids: list[Any]) -> dict[str, list[str]]:
     result = {}
-    
     for client_id in client_ids:
         client_id_str = str(client_id)
         result[client_id_str] = get_interests(client_id_str)
-    
     return result
