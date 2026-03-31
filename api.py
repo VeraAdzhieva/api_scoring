@@ -368,6 +368,7 @@ class OnlineScoreRequest(metaclass=Fields):
 
         return False
 
+
 class ClientsInterestsRequest(metaclass=Fields):
     client_ids = ClientIDsField(required=True, nullable=False)
     date = DateField(required=False, nullable=True, max_years_ago=70)
@@ -464,8 +465,10 @@ def method_handler(
     else:
         return {"error": f"Unknown method: {method_name}"}, INVALID_REQUEST
 
+
 class MainHTTPHandler(BaseHTTPRequestHandler):
     router: dict[str, Callable] = {"method": method_handler}
+
     def get_request_id(self, headers: Message) -> str:
         return headers.get("HTTP_X_REQUEST_ID", uuid.uuid4().hex)
 
