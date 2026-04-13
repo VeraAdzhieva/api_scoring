@@ -9,9 +9,11 @@ from email.message import Message
 from enum import Enum
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any, Callable
-
+from db import Database
 import scoring
 
+db = Database()
+db.connect()
 
 class Gender(Enum):
     UNKNOWN = 0
@@ -447,6 +449,7 @@ def method_handler(
                     first_name=arguments.get("first_name"),
                     last_name=arguments.get("last_name"),
                 )
+            db.save_score(request_data.get("login"), score)
             return {"score": score}, OK
         except Exception as e:
             return {"error": str(e)}, INVALID_REQUEST
