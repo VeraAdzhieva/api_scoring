@@ -9,11 +9,13 @@ from email.message import Message
 from enum import Enum
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any, Callable
-from db import Database
+
 import scoring
+from db import Database
 
 db = Database()
 db.connect()
+
 
 class Gender(Enum):
     UNKNOWN = 0

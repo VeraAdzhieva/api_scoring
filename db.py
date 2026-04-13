@@ -1,5 +1,6 @@
-import sqlite3
 import os
+import sqlite3
+
 
 class Database:
     def __init__(self, db_name="scores.db"):
@@ -24,10 +25,7 @@ class Database:
 
     def save_score(self, login: str, score: int):
         cursor = self.connection.cursor()
-        cursor.execute(
-            "INSERT INTO users (login, score) VALUES (?, ?)",
-            (login, score)
-        )
+        cursor.execute("INSERT INTO users (login, score) VALUES (?, ?)", (login, score))
         self.connection.commit()
 
     def get_all_scores(self):
