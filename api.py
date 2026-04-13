@@ -14,7 +14,7 @@ import scoring
 from db import Database
 
 db = Database()
-db.connect()
+db.init_table()
 
 
 class Gender(Enum):

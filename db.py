@@ -1,38 +1,46 @@
-import os
 import sqlite3
 
 
 class Database:
     def __init__(self, db_name="scores.db"):
-        self.db_path = os.path.join(os.path.dirname(__file__), db_name)
-        self.connection = None
+        self.db_path = db_name
 
-    def connect(self):
-        self.connection = sqlite3.connect(self.db_path)
-        self.connection.row_factory = sqlite3.Row
-        self._create_table()
-
-    def _create_table(self):
-        cursor = self.connection.cursor()
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                login TEXT NOT NULL,
-                score INTEGER NOT NULL
-            )
-        """)
-        self.connection.commit()
+    def _get_connection(self):
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        return conn
 
     def save_score(self, login: str, score: int):
-        cursor = self.connection.cursor()
-        cursor.execute("INSERT INTO users (login, score) VALUES (?, ?)", (login, score))
-        self.connection.commit()
+        conn = self._get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO users (login, score) VALUES (?, ?)", (login, score)
+            )
+            conn.commit()
+        finally:
+            conn.close()
 
     def get_all_scores(self):
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM users")
-        return cursor.fetchall()
+        conn = self._get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM users")
+            return cursor.fetchall()
+        finally:
+            conn.close()
 
-    def close(self):
-        if self.connection:
-            self.connection.close()
+    def init_table(self):
+        conn = self._get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    login TEXT NOT NULL,
+                    score INTEGER NOT NULL
+                )
+            """)
+            conn.commit()
+        finally:
+            conn.close()

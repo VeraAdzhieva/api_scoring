@@ -5,9 +5,16 @@ from db import Database
 @pytest.fixture
 def test_db():
     db = Database(db_name="test.db")
-    db.connect()
+    db.init_table()
+
+    conn = db._get_connection()
+    try:
+        conn.execute("DELETE FROM users")
+        conn.commit()
+    finally:
+        conn.close()
+
     yield db
-    db.close()
     if os.path.exists("test.db"):
         os.remove("test.db")
 
